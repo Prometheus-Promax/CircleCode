@@ -1,0 +1,18 @@
+server:
+  port: 8085
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: "jdbc:mysql://139.159.229.113:3306/circlecode_v1?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai"
+    username: root
+    password: root
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+jwt:
+  secret: CodeCircleSecret
+  expiration: 86400000
