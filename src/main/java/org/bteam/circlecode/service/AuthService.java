@@ -1,0 +1,78 @@
+package org.bteam.circlecode.service;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.bteam.circlecode.entity.User;
+import org.bteam.circlecode.mapper.UserMapper;
+import org.bteam.circlecode.utils.JwtUtil;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.net.http.HttpRequest;
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+public class AuthService {
+
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthService(AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil,
+                          UserMapper userMapper,
+                          PasswordEncoder passwordEncoder) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public Map<String, String> loginService(Map<String, String> loginRequest){
+        String username = loginRequest.get("username");
+        String password = loginRequest.get("password");
+
+        Authentication authentication = authenticationManager.authenticate(
+                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(username, password)
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String token = jwtUtil.generateToken(username);
+        Map<String, String> data = new HashMap<>();
+        data.put("token", token);
+        data.put("tokenHead", "Bearer ");
+        return data;
+    }
+
+    public Map<String, String> registerService(User user){
+
+        if (userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername())) > 0)
+        {
+            throw new RuntimeException("User already exists");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userMapper.insert(user);
+
+        Map<String, String> data = new HashMap<>();
+        data.put("message", "User registered successfully");
+        return data;
+    }
+
+    public User infoService(HttpRequest request){
+        String token = request.headers().firstValue("Authorization").orElse("").substring(7);
+        String username = jwtUtil.getUsernameFromToken(token);
+        if (username == null)
+        {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+        user.setPassword(null);
+        return user;
+    }
+}
