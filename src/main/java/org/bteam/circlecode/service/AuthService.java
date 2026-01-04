@@ -1,17 +1,13 @@
 package org.bteam.circlecode.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.bteam.circlecode.entity.User;
 import org.bteam.circlecode.mapper.UserMapper;
 import org.bteam.circlecode.utils.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.http.HttpRequest;
 import java.util.HashMap;
 import java.util.Map;
 

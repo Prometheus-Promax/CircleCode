@@ -1,12 +1,9 @@
 package org.bteam.circlecode.controller;
 
-import org.bteam.circlecode.common.Result;
-import org.bteam.circlecode.entity.User;
 import org.bteam.circlecode.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpRequest;
 import java.util.Map;
 
 @RestController
