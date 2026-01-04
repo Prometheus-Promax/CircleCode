@@ -28,8 +28,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // 前后端分离禁用 CSRF
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 禁用 Session
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // 允许匿名访问登录注册
-                        .anyRequest().authenticated() // 其他接口需认证
+                        .anyRequest().permitAll() // 允许匿名访问登录注册
                 )
                 // 添加 JWT 过滤器
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

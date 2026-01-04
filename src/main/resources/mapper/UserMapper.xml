@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace 必须对应 Mapper 接口的全限定名 -->
+<mapper namespace="org.bteam.circlecode.mapper.UserMapper">
+
+    <!-- resultMap：定义数据库字段与 Java 属性的映射关系 -->
+    <resultMap id="UserResultMap" type="org.bteam.circlecode.entity.User">
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="email" column="email" />
+        <result property="phone" column="phone" />
+        <result property="account_status" column="account_status" />
+        <result property="record_status" column="record_status" />
+        <result property="login_ip" column="login_ip" />
+        <result property="create_time" column="create_time" />
+        <result property="update_time" column="update_time" />
+    </resultMap>
+
+    <select id="selectByUsername" resultMap="UserResultMap">
+        SELECT
+            id, username, password, email, phone,
+            account_status, record_status, login_ip,
+            create_time, update_time
+        FROM sys_user
+        WHERE username = #{username}
+    </select>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_user (
+            username, password, email, phone,
+            account_status, record_status, login_ip,
+            create_time, update_time
+        ) VALUES (
+             #{username}, #{password}, #{email}, #{phone},
+             #{account_status}, #{record_status}, #{login_ip},
+             NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateById">
+        UPDATE users
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="account_status != null">account_status = #{account_status},</if>
+            <if test="record_status != null">record_status = #{record_status},</if>
+            update_time = NOW()
+            create_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByUsername">
+        DELETE FROM sys_user
+        WHERE username = #{username}
+    </delete>
+</mapper>

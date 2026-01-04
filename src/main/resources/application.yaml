@@ -9,6 +9,8 @@ spring:
     password: root
 
 mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: org.bteam.circlecode.entity
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

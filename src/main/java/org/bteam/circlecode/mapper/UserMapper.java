@@ -6,4 +6,10 @@ import org.bteam.circlecode.entity.User;
 
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
+
+    User selectByUsername(String username);
+
+    int insertUser(User user);
+
+    int deleteByUsername(String username);
 }

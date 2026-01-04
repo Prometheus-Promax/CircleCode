@@ -1,15 +1,14 @@
 package org.bteam.circlecode.controller;
 
-import org.bteam.circlecode.common.Result;
 import org.bteam.circlecode.entity.User;
 import org.bteam.circlecode.service.AuthService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpRequest;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/CodeCircle/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -19,21 +18,25 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Result login(@RequestBody Map<String, String> loginRequest) {
-        Map<String, String> data =  authService.loginService(loginRequest);
-        return Result.success(data);
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+        try{
+            Map<String, String> data =  authService.loginService(loginRequest);
+            return ResponseEntity.ok(data);
+        } catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Login failed: " + e.getMessage());
+        }
     }
 
     @PostMapping("/register")
-    public Result register(@RequestBody User user) {
-        Map<String, String> data = authService.registerService(user);
-        return Result.success(data);
+    public ResponseEntity<?> register(@RequestBody User user) {
+        try {
+            Map<String, String> data = authService.registerService(user);
+            return ResponseEntity.ok(data);
+        } catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Registration failed: " + e.getMessage());
+        }
     }
 
-    @GetMapping("/info")
-    @ResponseBody
-    public Result info(HttpRequest infoRequest) {
-        User data = authService.infoService(infoRequest);
-        return Result.success(data);
-    }
 }

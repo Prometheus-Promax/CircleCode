@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.http.HttpRequest;
 import java.util.HashMap;
@@ -36,10 +37,21 @@ public class AuthService {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
 
-        Authentication authentication = authenticationManager.authenticate(
-                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(username, password)
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        User user = userMapper.selectByUsername(username);
+        if (user == null)
+        {
+            throw new RuntimeException("User not found");
+        }
+
+        if (!passwordEncoder.matches(password, user.getPassword()))
+        {
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        if (user.getAccount_status() != 0)
+        {
+            throw new RuntimeException("User account is disabled");
+        }
 
         String token = jwtUtil.generateToken(username);
         Map<String, String> data = new HashMap<>();
@@ -48,31 +60,21 @@ public class AuthService {
         return data;
     }
 
+    @Transactional
     public Map<String, String> registerService(User user){
 
-        if (userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername())) > 0)
+        if (userMapper.selectByUsername(user.getUsername()) != null)
         {
             throw new RuntimeException("User already exists");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userMapper.insert(user);
+        userMapper.insertUser(user);
 
         Map<String, String> data = new HashMap<>();
-        data.put("message", "User registered successfully");
+        data.put("message", "User registered successfully!");
         return data;
     }
 
-    public User infoService(HttpRequest request){
-        String token = request.headers().firstValue("Authorization").orElse("").substring(7);
-        String username = jwtUtil.getUsernameFromToken(token);
-        if (username == null)
-        {
-            throw new RuntimeException("User not found");
-        }
 
-        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
-        user.setPassword(null);
-        return user;
-    }
 }
