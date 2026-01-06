@@ -9,6 +9,10 @@ public interface UserMapper extends BaseMapper<User> {
 
     User selectByUsername(String username);
 
+    User selectByEmail(String email);
+
+    User selectByPhone(String phone);
+
     int insertUser(User user);
 
     int deleteByUsername(String username);

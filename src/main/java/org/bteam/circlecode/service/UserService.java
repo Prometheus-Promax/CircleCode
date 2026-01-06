@@ -18,11 +18,10 @@ public class UserService {
     private final UserMapper userMapper;
     private final ObjectMapper objectMapper;
 
-    public UserService(JwtUtil jwtUtil,
-                       UserMapper userMapper, ObjectMapper objectMapper) {
+    public UserService(JwtUtil jwtUtil, UserMapper userMapper, ObjectMapper objectMapper) {
        this.jwtUtil = jwtUtil;
        this.userMapper = userMapper;
-        this.objectMapper = objectMapper;
+       this.objectMapper = objectMapper;
     }
 
     public Map userInfoService(Map<String, String> request){
@@ -41,8 +40,7 @@ public class UserService {
     @Transactional
     public Map<String, String> userDisableService(Map<String, String> request) {
         String username = request.get("username");
-        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
-
+        User user = userMapper.selectByUsername(username);
         if (user == null)
         {
             throw new RuntimeException("User not found");
@@ -78,7 +76,6 @@ public class UserService {
     public Map<String, String> userDeleteService(Map<String, String> deleteRequest) {
         String username = deleteRequest.get("username");
         User user = userMapper.selectByUsername(username);
-
         if (user == null)
         {
             throw new RuntimeException("User not found");

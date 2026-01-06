@@ -58,10 +58,25 @@ public class AuthService {
 
     @Transactional
     public Map<String, String> registerService(User user){
+        if (user.getUsername() == null || user.getPassword() == null ||
+            user.getEmail() == null || user.getPhone() == null)
+        {
+            throw new RuntimeException("Missing required fields");
+        }
 
         if (userMapper.selectByUsername(user.getUsername()) != null)
         {
             throw new RuntimeException("User already exists");
+        }
+
+        if (userMapper.selectByEmail(user.getEmail()) != null)
+        {
+            throw new RuntimeException("Email already exists");
+        }
+
+        if (userMapper.selectByPhone(user.getPhone()) != null)
+        {
+            throw new RuntimeException("Phone number already exists");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

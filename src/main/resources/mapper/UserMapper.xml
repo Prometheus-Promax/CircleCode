@@ -28,6 +28,24 @@
         WHERE username = #{username}
     </select>
 
+    <select id="selectByEmail" resultMap="UserResultMap">
+        SELECT
+            id, username, password, email, phone,
+            account_status, record_status, login_ip,
+            create_time, update_time
+        FROM sys_user
+        WHERE email = #{email}
+    </select>
+
+    <select id="selectByPhone" resultMap="UserResultMap">
+        SELECT
+            id, username, password, email, phone,
+            account_status, record_status, login_ip,
+            create_time, update_time
+        FROM sys_user
+        WHERE phone = #{phone}
+    </select>
+
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO sys_user (
             username, password, email, phone,
