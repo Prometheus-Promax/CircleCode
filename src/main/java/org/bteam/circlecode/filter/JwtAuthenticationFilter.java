@@ -14,8 +14,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
-
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

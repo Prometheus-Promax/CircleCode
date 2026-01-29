@@ -58,7 +58,7 @@
         )
     </insert>
 
-    <update id="updateById">
+    <update id="updateByUsername">
         UPDATE users
         <set>
             <if test="username != null">username = #{username},</if>
@@ -71,7 +71,7 @@
             update_time = NOW()
             create_time = NOW()
         </set>
-        WHERE id = #{id}
+        WHERE username = #{username}
     </update>
 
     <delete id="deleteByUsername">

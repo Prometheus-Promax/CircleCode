@@ -4,7 +4,10 @@ import org.bteam.circlecode.common.Response;
 import org.bteam.circlecode.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -12,7 +15,7 @@ import java.util.Map;
 @RequestMapping("/CodeCircle/user")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService){
         this.userService = userService;
@@ -53,8 +56,8 @@ public class UserController {
 
     @PostMapping("/info")
     public ResponseEntity<?> info(@RequestBody Map<String, String> infoRequest) {
-        Map<String, String> data = userService.userInfoService(infoRequest);
-        Response response = Response.builder()
+        Map<String, String> data =  userService.userInfoService(infoRequest);
+        Response<Object> response = Response.builder()
                 .code(200)
                 .message("User info retrieved successfully")
                 .data(data)

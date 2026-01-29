@@ -1,9 +1,8 @@
 package org.bteam.circlecode.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.bteam.circlecode.entity.User;
 import org.bteam.circlecode.mapper.UserMapper;
-import org.bteam.circlecode.utils.JwtUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
@@ -12,22 +11,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class UserService {
 
-    private final JwtUtil jwtUtil;
     private final UserMapper userMapper;
     private final ObjectMapper objectMapper;
 
-    public UserService(JwtUtil jwtUtil, UserMapper userMapper, ObjectMapper objectMapper) {
-       this.jwtUtil = jwtUtil;
+    public UserService(UserMapper userMapper, ObjectMapper objectMapper) {
        this.userMapper = userMapper;
        this.objectMapper = objectMapper;
     }
 
-    public Map userInfoService(Map<String, String> request){
+    public Map<String, String> userInfoService(Map<String, String> request){
         String username = request.get("username");
         if (username == null)
         {
+            log.info("User info request failed: username is null");
             throw new RuntimeException("User not found");
         }
 
@@ -43,6 +42,7 @@ public class UserService {
         User user = userMapper.selectByUsername(username);
         if (user == null)
         {
+            log.info("User disable request failed: user {} not found", username);
             throw new RuntimeException("User not found");
         }
 
@@ -61,6 +61,7 @@ public class UserService {
 
         if (user == null)
         {
+            log.info("User enable request failed: user {} not found", username);
             throw new RuntimeException("User not found");
         }
 
@@ -78,6 +79,7 @@ public class UserService {
         User user = userMapper.selectByUsername(username);
         if (user == null)
         {
+            log.info("User delete request failed: user {} not found", username);
             throw new RuntimeException("User not found");
         }
 

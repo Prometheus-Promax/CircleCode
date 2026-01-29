@@ -13,7 +13,7 @@ public interface UserMapper extends BaseMapper<User> {
 
     User selectByPhone(String phone);
 
-    int insertUser(User user);
+    void insertUser(User user);
 
-    int deleteByUsername(String username);
+    void deleteByUsername(String username);
 }
