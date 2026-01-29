@@ -3,6 +3,7 @@ package org.bteam.circlecode.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ public class JwtUtil {
     private String secret;
 
     @Value("${jwt.expiration}")
+    @Getter
     private Long expiration;
 
     public String generateToken(String username){

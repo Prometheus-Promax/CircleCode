@@ -1,6 +1,7 @@
 package org.bteam.circlecode.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.bteam.circlecode.common.BusinessException;
 import org.bteam.circlecode.common.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,15 +12,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 public class GloableExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Response> HandleBusinessException(Exception e) {
-        log.error("Exception: ", e);
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<Response> HandleBusinessException(BusinessException e) {
+        log.error("BusinessException: ", e);
         Response response = Response.builder()
-                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .code(e.getCode())
                 .message(e.getMessage())
                 .data(null)
                 .build();
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @ExceptionHandler(RuntimeException.class)

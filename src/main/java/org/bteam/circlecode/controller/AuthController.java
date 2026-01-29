@@ -33,6 +33,17 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody Map<String, String> logoutRequest) {
+        Map<String, String> data =  authService.logoutService(logoutRequest);
+        Response<Object> response = Response.builder()
+                .code(HttpStatus.OK.value())
+                .message("Logout successful")
+                .data(data)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
         Map<String, String> data = authService.registerService(user);

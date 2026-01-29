@@ -7,6 +7,12 @@ spring:
     url: "jdbc:mysql://139.159.229.113:3306/circlecode_v1?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai"
     username: root
     password: root
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
 
 mybatis:
   mapper-locations: classpath*:mapper/**/*.xml

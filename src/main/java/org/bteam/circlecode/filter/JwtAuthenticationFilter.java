@@ -4,7 +4,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.bteam.circlecode.service.TokenService;
 import org.bteam.circlecode.utils.JwtUtil;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,23 +20,26 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final TokenService tokenService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
             "/CodeCircle/auth/login",
             "/CodeCircle/auth/register"
     );
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, TokenService tokenService) {
         this.jwtUtil = jwtUtil;
+        this.tokenService = tokenService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
             throws ServletException, IOException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
+        // Check if the request path is public
         String requestURI = httpRequest.getRequestURI();
         for (String publicPath : PUBLIC_PATHS) {
             if (pathMatcher.match(publicPath, requestURI)) {
@@ -43,38 +48,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        // 2. 获取 Token
+        // Access Token
         String token = null;
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             token =  bearerToken.substring(7);
         }
 
-        // 3. 验证 Token
+        // Validate Token
         if (token == null) {
             sendErrorResponse(httpResponse, 401, "Unauthorized: Token missing");
             return;
         }
-        if (!jwtUtil.validateToken(token)) {
+        if (!jwtUtil.validateToken(token) || !tokenService.isValid(token)) {
             sendErrorResponse(httpResponse, 401, "Token invalid");
             return;
         }
 
-        // 4. 检查 Token 是否过期
+        // Check Token Expiration
         Date expiration = jwtUtil.getExpirationDateFromToken(token);
         if (expiration.before(new Date())) {
             sendErrorResponse(httpResponse, 401, "Token expired");
             return;
         }
 
-        // 5. 将用户信息存入请求属性，方便后续使用
+        // Store user information in request attribute
         String userId = jwtUtil.getUserIdFromToken(token);
         String username = jwtUtil.getUsernameFromToken(token);
 
         httpRequest.setAttribute("userId", userId);
         httpRequest.setAttribute("username", username);
 
-        // 6. 继续过滤器链
+        // Filter Chain
         chain.doFilter(request, response);
     }
 

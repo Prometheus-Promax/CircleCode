@@ -1,6 +1,8 @@
 package org.bteam.circlecode.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.bteam.circlecode.common.BusinessException;
+import org.bteam.circlecode.config.BusinessErrorCode;
 import org.bteam.circlecode.entity.User;
 import org.bteam.circlecode.mapper.UserMapper;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,7 @@ public class UserService {
         if (username == null)
         {
             log.info("User info request failed: username is null");
-            throw new RuntimeException("User not found");
+            throw new BusinessException(BusinessErrorCode.INVALID_REQUEST.getCode(),  BusinessErrorCode.INVALID_REQUEST.getMessage());
         }
 
         User user = userMapper.selectByUsername(username);
@@ -43,7 +45,7 @@ public class UserService {
         if (user == null)
         {
             log.info("User disable request failed: user {} not found", username);
-            throw new RuntimeException("User not found");
+            throw new BusinessException(BusinessErrorCode.USER_NOT_FOUND.getCode(),  BusinessErrorCode.USER_NOT_FOUND.getMessage() );
         }
 
         user.setRecord_status(0);
@@ -62,7 +64,7 @@ public class UserService {
         if (user == null)
         {
             log.info("User enable request failed: user {} not found", username);
-            throw new RuntimeException("User not found");
+            throw new BusinessException(BusinessErrorCode.USER_NOT_FOUND.getCode(),  BusinessErrorCode.USER_NOT_FOUND.getMessage() );
         }
 
         user.setRecord_status(1);
@@ -80,7 +82,7 @@ public class UserService {
         if (user == null)
         {
             log.info("User delete request failed: user {} not found", username);
-            throw new RuntimeException("User not found");
+            throw new BusinessException(BusinessErrorCode.USER_NOT_FOUND.getCode(),  BusinessErrorCode.USER_NOT_FOUND.getMessage() );
         }
 
         userMapper.deleteByUsername(username);
