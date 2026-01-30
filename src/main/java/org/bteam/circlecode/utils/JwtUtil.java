@@ -20,9 +20,10 @@ public class JwtUtil {
     @Getter
     private Long expiration;
 
-    public String generateToken(String username){
+    public String generateToken(String username, String userId) {
         return Jwts.builder()
                 .setSubject(username)
+                .setId(userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(SignatureAlgorithm.HS256, secret)

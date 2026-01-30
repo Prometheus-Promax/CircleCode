@@ -55,7 +55,7 @@ public class AuthService {
             throw new BusinessException(BusinessErrorCode.ACCOUNT_DISABLED.getCode(),  BusinessErrorCode.ACCOUNT_DISABLED.getMessage());
         }
 
-        String token = jwtUtil.generateToken(username);
+        String token = jwtUtil.generateToken(username, String.valueOf(user.getId()));
         tokenService.addToken(token, jwtUtil.getExpiration(), String.valueOf(user.getId()));
         Map<String, String> data = new HashMap<>();
         data.put("token", token);
@@ -65,7 +65,8 @@ public class AuthService {
 
     public Map<String, String> logoutService(Map<String, String> logoutRequest){
         String token = logoutRequest.get("token");
-        tokenService.removeToken(token);
+        String userId = jwtUtil.getUserIdFromToken(token);
+        tokenService.removeToken(userId);
         Map<String, String> data = new HashMap<>();
         data.put("message", "User logout successfully!");
         return data;

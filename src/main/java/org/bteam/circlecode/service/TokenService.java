@@ -23,7 +23,7 @@ public class TokenService {
         return Objects.equals(token, storedToken);
     }
 
-    public void removeToken(String token) {
-        redisTemplate.delete(PREFIX + token);
+    public void removeToken(String userId) {
+        redisTemplate.delete(PREFIX + userId);
     }
 }
