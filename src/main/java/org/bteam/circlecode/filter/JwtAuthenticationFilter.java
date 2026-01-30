@@ -4,12 +4,15 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.bteam.circlecode.common.Response;
 import org.bteam.circlecode.service.TokenService;
 import org.bteam.circlecode.utils.JwtUtil;
 import org.jspecify.annotations.NonNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -57,25 +60,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Validate Token
         if (token == null) {
-            sendErrorResponse(httpResponse, 401, "Unauthorized: Token missing");
+            sendErrorResponse(httpResponse, HttpStatus.UNAUTHORIZED.value(), "Unauthorized: Token missing");
             return;
         }
-        if (!jwtUtil.validateToken(token) || !tokenService.isValid(token)) {
-            sendErrorResponse(httpResponse, 401, "Token invalid");
+        String userId = jwtUtil.getUserIdFromToken(token);
+        String username = jwtUtil.getUsernameFromToken(token);
+        if (!jwtUtil.validateToken(token) || !tokenService.isValid(token, userId)) {
+            sendErrorResponse(httpResponse, HttpStatus.UNAUTHORIZED.value(), "Token invalid");
             return;
         }
 
         // Check Token Expiration
         Date expiration = jwtUtil.getExpirationDateFromToken(token);
         if (expiration.before(new Date())) {
-            sendErrorResponse(httpResponse, 401, "Token expired");
+            sendErrorResponse(httpResponse, HttpStatus.UNAUTHORIZED.value(), "Token expired");
             return;
         }
 
         // Store user information in request attribute
-        String userId = jwtUtil.getUserIdFromToken(token);
-        String username = jwtUtil.getUsernameFromToken(token);
-
         httpRequest.setAttribute("userId", userId);
         httpRequest.setAttribute("username", username);
 
@@ -87,10 +89,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws IOException {
         response.setStatus(status);
         response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write(String.format(
-                "{\"success\": false, \"code\": \"AUTH_ERROR\", \"message\": \"%s\"}",
-                message
-        ));
+        Response<Object> filterResponse = Response.builder()
+                .code(response.getStatus())
+                .message(message)
+                .data(null)
+                .build();
+        String jsonResponse = new ObjectMapper().writeValueAsString(filterResponse);
+        response.getWriter().write(jsonResponse);
     }
 
 }

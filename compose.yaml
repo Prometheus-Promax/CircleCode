@@ -11,12 +11,24 @@ services:
   server:
     build:
       context: .
+    environment:
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - LOG_HOME=/tmp/logs
     volumes:
       - ./src:/app/src
       - ./pom.xml:/app/pom.xml
       - ./mvnw:/app/mvnw
+      - ./logs:/tmp/logs
     ports:
       - 8080:8080
+    depends_on:
+      - redis
+  redis:
+    image: "redis:alpine"
+    container_name: my-redis
+    ports:
+      - 6379:6379
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to

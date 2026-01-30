@@ -4,7 +4,7 @@
     <!-- ==================== 基础配置 ==================== -->
     <!-- 定义变量 -->
     <property name="APP_NAME" value="${spring.application.name:-myapp}"/>
-    <property name="LOG_HOME" value="${LOG_HOME:-./logs}"/>
+    <property name="LOG_HOME" value="${LOG_HOME:-/tmp/logs}"/>
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"/>
     <property name="CONSOLE_PATTERN" value="%d{HH:mm:ss.SSS} %highlight(%-5level) %cyan(%logger{50}) - %msg%n"/>
 
