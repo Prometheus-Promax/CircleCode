@@ -13,6 +13,13 @@ spring:
       port: 6379
       database: 0
 
+huawei:
+  obs:
+    end-point: obs.cn-south-4.myhuaweicloud.com
+    access-key: "HPUAH0VZLPSTRALKMTS6"
+    secret-key: "oibodRcBnoVQk7O9LWvWDC9chN1x9IDTuHOxxhAV"
+    bucket-name: codecircle
+    domain-name: codecircle.obs.cn-south-4.myhuaweicloud.com
 
 mybatis:
   mapper-locations: classpath*:mapper/**/*.xml

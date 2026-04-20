@@ -6,8 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -60,6 +62,29 @@ public class UserController {
         Response<Object> response = Response.builder()
                 .code(200)
                 .message("User info retrieved successfully")
+                .data(data)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> update(@RequestBody Map<String, String> updateRequest) {
+        Map<String, String> data =  userService.userUpdateService(updateRequest);
+        Response<Object> response = Response.builder()
+                .code(200)
+                .message("User info updated successfully")
+                .data(data)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/avatar")
+    public ResponseEntity<?> avatar(@RequestParam("username") String username,
+                                    @RequestParam("file") MultipartFile file) {
+        Map<String, String> data = userService.uploadAvatarService(username, file);
+        Response<Object> response = Response.builder()
+                .code(200)
+                .message("User avatar updated successfully")
                 .data(data)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);

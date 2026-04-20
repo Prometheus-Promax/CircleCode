@@ -12,6 +12,7 @@
         <result property="password" column="password" />
         <result property="email" column="email" />
         <result property="phone" column="phone" />
+        <result property="avatar" column="avatar" />
         <result property="account_status" column="account_status" />
         <result property="record_status" column="record_status" />
         <result property="login_ip" column="login_ip" />
@@ -21,7 +22,7 @@
 
     <select id="selectByUsername" resultMap="UserResultMap">
         SELECT
-            id, username, password, email, phone,
+            id, username, password, email, phone, avatar,
             account_status, record_status, login_ip,
             create_time, update_time
         FROM sys_user
@@ -30,7 +31,7 @@
 
     <select id="selectByEmail" resultMap="UserResultMap">
         SELECT
-            id, username, password, email, phone,
+            id, username, password, email, phone, avatar,
             account_status, record_status, login_ip,
             create_time, update_time
         FROM sys_user
@@ -39,7 +40,7 @@
 
     <select id="selectByPhone" resultMap="UserResultMap">
         SELECT
-            id, username, password, email, phone,
+            id, username, password, email, phone, avatar,
             account_status, record_status, login_ip,
             create_time, update_time
         FROM sys_user
@@ -48,11 +49,11 @@
 
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO sys_user (
-            username, password, email, phone,
+            username, password, email, phone, avatar,
             account_status, record_status, login_ip,
             create_time, update_time
         ) VALUES (
-             #{username}, #{password}, #{email}, #{phone},
+             #{username}, #{password}, #{email}, #{phone}, #{avatar},
              #{account_status}, #{record_status}, #{login_ip},
              NOW(), NOW()
         )

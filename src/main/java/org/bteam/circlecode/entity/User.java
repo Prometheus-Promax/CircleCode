@@ -18,6 +18,7 @@ public class User {
     private String nickname;
     private String email;
     private String phone;
+    private String avatar;
     private Integer account_status;
     @TableLogic
     private Integer record_status;

@@ -18,10 +18,12 @@ public class UserService {
 
     private final UserMapper userMapper;
     private final ObjectMapper objectMapper;
+    private final AvatarService avatarService;
 
-    public UserService(UserMapper userMapper, ObjectMapper objectMapper) {
+    public UserService(UserMapper userMapper, ObjectMapper objectMapper, AvatarService avatarService) {
        this.userMapper = userMapper;
        this.objectMapper = objectMapper;
+       this.avatarService = avatarService;
     }
 
     public Map<String, String> userInfoService(Map<String, String> request){
@@ -89,6 +91,63 @@ public class UserService {
 
         Map<String, String> data = new HashMap<>();
         data.put("message", "User deleted successfully!");
+        return data;
+    }
+
+    @Transactional
+    public Map<String, String> userUpdateService(Map<String, String> request) {
+        String username = request.get("username");
+        if (username == null || username.isBlank()) {
+            throw new BusinessException(BusinessErrorCode.INVALID_REQUEST.getCode(), "Username is required");
+        }
+
+        User user = userMapper.selectByUsername(username);
+        if (user == null) {
+            log.info("User update request failed: user {} not found", username);
+            throw new BusinessException(BusinessErrorCode.USER_NOT_FOUND.getCode(), BusinessErrorCode.USER_NOT_FOUND.getMessage());
+        }
+
+        String nickname = request.get("nickname");
+        String email = request.get("email");
+        String phone = request.get("phone");
+
+        if (nickname != null) {
+            user.setNickname(nickname);
+        }
+        if (email != null) {
+            user.setEmail(email);
+        }
+        if (phone != null) {
+            user.setPhone(phone);
+        }
+
+        userMapper.updateById(user);
+
+        Map<String, String> data = new HashMap<>();
+        data.put("message", "User updated successfully!");
+        return data;
+    }
+
+    @Transactional
+    public Map<String, String> uploadAvatarService(String username, org.springframework.web.multipart.MultipartFile file) {
+        if (username == null || username.isBlank()) {
+            throw new BusinessException(BusinessErrorCode.INVALID_REQUEST.getCode(), "Username is required");
+        }
+
+        User user = userMapper.selectByUsername(username);
+        if (user == null) {
+            log.info("Avatar update request failed: user {} not found", username);
+            throw new BusinessException(BusinessErrorCode.USER_NOT_FOUND.getCode(), BusinessErrorCode.USER_NOT_FOUND.getMessage());
+        }
+
+        String oldAvatarUrl = user.getAvatar();
+        String avatarUrl = avatarService.uploadAvatar(file, username);
+        user.setAvatar(avatarUrl);
+        userMapper.updateById(user);
+        avatarService.deleteAvatarByUrl(oldAvatarUrl);
+
+        Map<String, String> data = new HashMap<>();
+        data.put("avatar", avatarUrl);
         return data;
     }
 
